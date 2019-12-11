@@ -1,11 +1,9 @@
 const express = require('express');
 
-const expressConfig = (apiRoot, routes) => {
+const expressConfig = (apiRoot, api) => {
     const app = express();
-
     app.use(express.json());
-    //app.use(apiRoot, routes);
-
+    app.use(apiRoot, api);
 
     // 404 Error handler
     app.use((req, res, next) =>  res.status(404).send({error: 'Routing not found'}));
@@ -17,12 +15,10 @@ const expressConfig = (apiRoot, routes) => {
             return res.status(400).end();
         if(err.name === 'ValidationError')
             return res.status(400).json({error: err.message});
-        // handle other errors
-        // Otherwise...
         return res.status(500).end();
     });
 
-    return app
+    return app;
 };
 
 module.exports = expressConfig;

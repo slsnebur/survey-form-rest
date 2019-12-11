@@ -1,3 +1,5 @@
+//"C:\Program Files\MongoDB\Server\4.2\bin\mongod.exe" --dbpath="c:\data\db"
+
 const env = process.env.NODE_ENV || 'dev';
 
 const dev = {
@@ -6,7 +8,7 @@ const dev = {
     ip: '127.0.0.1',
     apiRoot: '/api',
     mongo: {
-        host: 'mongodb://localhost/ii2019',
+        host: 'mongodb://localhost/qform-app-db',
         options: {
             useNewUrlParser: true,
             useCreateIndex: true,
@@ -23,7 +25,7 @@ const test = {
     ip: '127.0.0.1',
     apiRoot: '/api',
     mongo: {
-        host: 'mongodb://localhost/ii2019',
+        host: 'mongodb://localhost/qform-app-db',
         options: {
             useNewUrlParser: true,
             useCreateIndex: true,
