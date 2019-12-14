@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { mongo } = require('../../config')
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 // const { mongo } = config;
 
@@ -20,4 +21,7 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connect(mongo.host)
 
-module.exports = mongoose
+module.exports = {
+    mongoose,
+    AutoIncrement
+};

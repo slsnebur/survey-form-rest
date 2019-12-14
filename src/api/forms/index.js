@@ -15,7 +15,8 @@ const {
     updatePage,
     deleteForm,
     deleteAllCommentsFromForm,
-    deletePagesFromForm
+    deletePagesFromForm,
+    deletePageFromForm
 } = require('./controller');
 const router = Router();
 
@@ -26,17 +27,21 @@ router.get('/:id/users', getUserFromForm);
 router.get('/:id/summary', getSummaryFromForm);
 router.get('/:id/qr', getQRForm);
 router.get('/:id/pages', getPagesFromForm);
+//TODO
 router.get('/:id/pages/:pid', getPageFromForm);
 
 router.post('/', addForm);
 router.post('/:id/comments', addComment);
 router.post('/:id/pages', addPages);
 
-router.put('/', updateForm);
-router.put('/', updatePage);
+//TODO
+router.put('/:id', updateForm);
+router.put('/:id/pages/:pid', updatePage);
 
-router.delete('/', deleteForm);
-router.delete('/', deleteAllCommentsFromForm);
-router.delete('/', deletePagesFromForm);
+//TODO
+router.delete('/:id', deleteForm);
+router.delete('/:id/comments', deleteAllCommentsFromForm);
+router.delete('/:id/pages', deletePagesFromForm);
+router.delete('/:id/pages/:pid', deletePageFromForm);
 
 module.exports = router;

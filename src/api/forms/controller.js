@@ -4,94 +4,104 @@ const {Form} = require('./model');
 
 // GET
 // Returns all forms currently present in DB
-const getForms = ({ query }, res, next) => {
+const getForms = async ({ query }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns form specified by form_id
-const getForm = ({ params }, res, next) => {
+const getForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns all comments of form specified by id
-const getCommentsFromForm = ({ params }, res, next) => {
+const getCommentsFromForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns owner of the form specified by id
-const getUserFromForm = ({ params }, res, next) => {
+const getUserFromForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns survey results as json
-const getSummaryFromForm = ({ params }, res, next) => {
+const getSummaryFromForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns QR code which contains link to this form
-const getQRForm = ({ params }, res, next) => {
+const getQRForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns array of pages (sets with questions and answers) associated with this form
-const getPagesFromForm = ({ params }, res, next) => {
+const getPagesFromForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 // Returns page with specified page id
-const getPageFromForm = ({ params }, res, next) => {
+const getPageFromForm = async ({ params }, res, next) => {
     const id = parseInt(params.id);
     res.json({message: 'This method has not been implemented'});
 };
 
 //POST
 // Creates empty form
-const addForm = ({ body }, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const addForm = async ({ body }, res, next) => {
+    try {
+        const form = await Form.create(body);
+        return res.status(201).json(form);
+    } catch (e) {
+        return next(e);
+    }
 };
 
 // Adds comment to specified form
-const addComment = ({ body }, res, next) => {
+const addComment = async ({ body }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // Appends to Pages array
-const addPages = ({ body }, res, next) => {
+const addPages = async ({ body }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // PUT
 
 // Updates form specified by id
-const updateForm = ({ body , params }, res, next) => {
+const updateForm = async ({ body , params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // Updated page specified by id
-const updatePage = ({ body , params }, res, next) => {
+const updatePage = async ({ body , params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // DELETE
 
 // Deletes form specified by id
-const deleteForm = ({ params }, res, next) => {
+const deleteForm = async ({ params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // Drops all comments from form
-const deleteAllCommentsFromForm = ({ params }, res, next) => {
+const deleteAllCommentsFromForm = async ({ params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
 // Drops pages array from form
-const deletePagesFromForm = ({ params }, res, next) => {
+const deletePagesFromForm = async ({ params }, res, next) => {
+    res.json({message: 'This method has not been implemented'});
+};
+
+// Drops specified page from form
+const deletePageFromForm = async ({ params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
@@ -112,6 +122,7 @@ module.exports = {
     updatePage,
     deleteForm,
     deleteAllCommentsFromForm,
-    deletePagesFromForm
+    deletePagesFromForm,
+    deletePageFromForm
 };
 

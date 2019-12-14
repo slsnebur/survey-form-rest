@@ -1,7 +1,11 @@
 const Mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(Mongoose);
 const Schema = Mongoose.Schema;
 
+
 const FormSchema = new Schema({
+    //Form id:
+    form_id: {type: Number},
     //Form name
     name: {type: String, required: true},
     //Date of creation
@@ -30,6 +34,8 @@ const FormSchema = new Schema({
     }]
 
 });
+
+FormSchema.plugin(AutoIncrement, {inc_field: 'form_id'});
 
 module.exports = {
     FormSchema,
