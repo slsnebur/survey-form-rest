@@ -8,12 +8,12 @@ const CommentSchema = new Schema({
     comment_id: {type: Number},
     //user_id:
     user_id: {type: Number},
-    //username:
-    username: {type: String},
     //Form id
     form_id: {type: Number},
+    //username:
+    username: {type: String},
     //Comment
-    text: {type: String, required: true},
+    text: {type: String, required: true, minlength: 4, maxlength: 512},
     //Timestamp
     timestamp: {type: Date}
 });

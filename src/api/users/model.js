@@ -7,7 +7,7 @@ const UserSchema = new Schema({
     //User id:
     user_id: {type: Number},
     //username:
-    username: {type: String, required: true},
+    username: {type: String, required: true, minlength: 4, maxlength: 128},
     //hashed password (bcrypt)
     password: {type: String, required: true},
     //email address:
@@ -15,8 +15,8 @@ const UserSchema = new Schema({
     //User group
     group: {
         type: String,
-        enum: ['user', 'admin'],
-        default: 'user'
+        enum: ['standard', 'admin'],
+        default: 'standard'
     }
 });
 

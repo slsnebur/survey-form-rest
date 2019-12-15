@@ -5,13 +5,13 @@ const Schema = Mongoose.Schema;
 
 const FormSchema = new Schema({
     //Form id:
-    form_id: {type: Number},
+    form_id: {type: Number,},
     //Form name
     name: {type: String, required: true},
     //Date of creation
     timestamp: {type: Date},
     //Owner's user_id
-    user_id: {type: String},
+    user_id: {type: Number},
     //QR code link or in binary
     qr_code: {type: String},
     //Array of comments (ids) posted to this form
@@ -21,7 +21,7 @@ const FormSchema = new Schema({
     //Pages object array
     pages: [{
         //Question id
-        question_id: {type: String},
+        question_id: {type: Number},
         //Question
         question: {type: String},
         //Array of possible answers
