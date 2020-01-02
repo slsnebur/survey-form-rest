@@ -12,11 +12,11 @@ module.exports = (req, res, next) => {
     const [email, password] = credentials.split(':');
 
     User.findOne({ email: email }).then((user) => {
-        if (!user) {
-            return res.status(401);
+        if (user === null) {
+            return res.status(401).json({message: 'Incorrect email credentials'});
         }
         return user.authenticate(password, user.password).then((user) => {
-            if(!user) return res.status(403);
+            if(user === false) return res.status(403).json({message: 'Wrong password'});
             req.user = user;
             next();
         })

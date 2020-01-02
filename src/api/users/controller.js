@@ -87,7 +87,10 @@ const loginUser = async (req, res, next) => {
     const user = req.user;
     const token = sign(user);
 
-    return res.json({token: token});
+    return res.json({
+        user: user.view(),
+        token: token
+    });
 };
 
 // PUT
