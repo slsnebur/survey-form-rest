@@ -3,6 +3,8 @@ const express = require('./services/express');
 const mongoose = require('./services/mongoose');
 const api = require('./api');
 
+require('dotenv').config();
+
 const app = express(apiRoot, api);
 
 app.listen(port, ip, () => {

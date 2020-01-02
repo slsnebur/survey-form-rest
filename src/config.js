@@ -16,7 +16,8 @@ const dev = {
             useFindAndModify: false,
             debug: true
         }
-    }
+    },
+    jwtExpiration: "30d"
 };
 
 const test = {

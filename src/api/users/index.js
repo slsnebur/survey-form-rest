@@ -1,4 +1,6 @@
 const { Router } = require('express');
+const password = require('../../middlewares/password');
+
 const {
     getUsers,
     getUser,
@@ -6,7 +8,8 @@ const {
     createUser,
     updateUser,
     destroyUser,
-    destroyUserComments
+    destroyUserComments,
+    loginUser
 } = require('./controller');
 const router = Router();
 
@@ -15,6 +18,7 @@ router.get('/:id', getUser);
 router.get('/:id/comments', getUserComments);
 
 router.post('/', createUser);
+router.post('/login', password, loginUser);
 
 router.put('/:id', updateUser);
 

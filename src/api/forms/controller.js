@@ -55,7 +55,12 @@ const getPageFromForm = async ({ params }, res, next) => {
 const addForm = async ({ body }, res, next) => {
     try {
         const form = await Form.create(body);
-        return res.status(201).json(form);
+        return res.status(201).json({
+            "form_id": form.form_id,
+            "name": form.name,
+            "comments_id": form.comments_id,
+            "pages": form.pages
+        })
     } catch (e) {
         return next(e);
     }
@@ -67,8 +72,40 @@ const addComment = async ({ body }, res, next) => {
 };
 
 // Appends to Pages array
-const addPages = async ({ body }, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const addPages = async ({ body, params }, res, next) => {
+    const id = {form_id: params.id};
+    const { pages } = body;
+    try {
+        const form = await Form.findOne(id);
+        if(form) {
+            //TODO pid indexing and other stuff
+            return res.status(200).json({"message": "Successfully added form pages list/array"});
+        }
+        return res.status(404).json({"error": "Form not found"});
+    } catch (e) {
+        return next(e);
+    }
+
+
+/*
+    const id = {user_id: params.id};
+    const {username, email, password} = body;
+    try {
+        const user = await User.findOne(id);
+        if(user){
+            user.username = username;
+            user.email = email;
+            user.password = await bcrypt.hash(password, 12);
+            await user.save();
+            return res.status(200).json({"message": "User data successfully updated"});
+        }
+        return res.status(404).json({error: "User not found"});
+
+    } catch (e) {
+        next(e)
+    }
+
+ */
 };
 
 // PUT

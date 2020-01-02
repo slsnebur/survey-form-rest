@@ -1,8 +1,12 @@
 const {User} = require('./model');
 const bcrypt = require('bcryptjs');
+const {sign} = require('../../services/jwt')
 
 
 // GET
+
+// Gets the user id based on the received token
+
 
 // Returns all users
 const getUsers = async ({ query }, res, next) => {
@@ -65,20 +69,30 @@ const createUser = async ({ body }, res, next) => {
         body.password = await bcrypt.hash(body.password, 12);
         const user = await User.create(body);
         return res.status(201).json({
-            "user_id": user.user_id,
-            "username": user.username,
-            "email": user.email,
-            "group": user.group
+                user: user.view(),
+                token: sign(user)
             });
     } catch (e) {
-        return next(e);
+        if(e.name === 'MongoError' && e.code === 11000) {
+            return res.status(409).json({
+               message: 'Email already registered'
+            });
+        }
+        next(e);
     }
+};
+
+// Login
+const loginUser = async (req, res, next) => {
+    const user = req.user;
+    const token = sign(user);
+
+    return res.json({token: token});
 };
 
 // PUT
 
 // Updates user by id
-// Should be 3 different methods
 const updateUser = async ({body, params}, res, next) => {
     const id = {user_id: params.id};
     const {username, email, password} = body;
@@ -129,5 +143,6 @@ module.exports = {
     createUser,
     updateUser,
     destroyUser,
-    destroyUserComments
+    destroyUserComments,
+    loginUser
 };
