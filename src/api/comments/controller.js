@@ -2,6 +2,7 @@ const {Comment} = require('./model');
 
 // GET
 
+//TODO
 // Returns comment by id
 const getComment = async ({ query }, res, next) => {
     res.json({message: 'This method has not been implemented'});
@@ -10,6 +11,7 @@ const getComment = async ({ query }, res, next) => {
 
 // PUT
 
+//TODO
 // Updates comment by id
 const updateComment = async ({body, params}, res, next) => {
     res.json({message: 'This method has not been implemented'});
@@ -17,6 +19,7 @@ const updateComment = async ({body, params}, res, next) => {
 
 // DELETE
 
+//TODO
 // Deletes comment by id
 const deleteComment = async ({params}, res, next) => {
     res.json({message: 'This method has not been implemented'});

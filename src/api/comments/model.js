@@ -20,6 +20,20 @@ const CommentSchema = new Schema({
 
 CommentSchema.plugin(AutoIncrement, {inc_field: 'comment_id'});
 
+CommentSchema.methods = {
+    // Returning comment data
+    view() {
+        let fields = ['comment_id', 'user_id', 'form_id', 'username', 'text', 'timestamp'];
+        let view = {};
+
+        fields.forEach((field) => {
+            view[field] = this[field]
+        });
+
+        return view;
+    }
+};
+
 module.exports = {
     CommentSchema,
     Comment: Mongoose.model('Comment', CommentSchema)

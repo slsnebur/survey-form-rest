@@ -37,6 +37,20 @@ const FormSchema = new Schema({
 
 FormSchema.plugin(AutoIncrement, {inc_field: 'form_id'});
 
+FormSchema.methods = {
+    // Returns form data
+    view() {
+        let fields = ['form_id', 'name', 'user_id', 'comments_id', 'pages'];
+        let view = {};
+
+        fields.forEach((field) => {
+            view[field] = this[field]
+        });
+
+        return view;
+    }
+};
+
 module.exports = {
     FormSchema,
     Form: Mongoose.model('Form', FormSchema)

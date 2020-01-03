@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const token = require('../../middlewares/token');
 const {
     getForms,
     getForm,
@@ -27,21 +28,18 @@ router.get('/:id/users', getUserFromForm);
 router.get('/:id/summary', getSummaryFromForm);
 router.get('/:id/qr', getQRForm);
 router.get('/:id/pages', getPagesFromForm);
-//TODO
 router.get('/:id/pages/:pid', getPageFromForm);
 
-router.post('/', addForm);
-router.post('/:id/comments', addComment);
-router.post('/:id/pages', addPages);
+router.post('/', token, addForm);
+router.post('/:id/comments', token, addComment);
+router.post('/:id/pages', token, addPages);
 
-//TODO
-router.put('/:id', updateForm);
-router.put('/:id/pages/:pid', updatePage);
+router.put('/:id', token, updateForm);
+router.put('/:id/pages/:pid', token, updatePage);
 
-//TODO
-router.delete('/:id', deleteForm);
-router.delete('/:id/comments', deleteAllCommentsFromForm);
-router.delete('/:id/pages', deletePagesFromForm);
-router.delete('/:id/pages/:pid', deletePageFromForm);
+router.delete('/:id', token, deleteForm);
+router.delete('/:id/comments', token, deleteAllCommentsFromForm);
+router.delete('/:id/pages', token, deletePagesFromForm);
+router.delete('/:id/pages/:pid', token, deletePageFromForm);
 
 module.exports = router;

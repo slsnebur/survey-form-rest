@@ -1,12 +1,21 @@
 const {User} = require('./model');
 const bcrypt = require('bcryptjs');
-const {sign} = require('../../services/jwt')
+const {sign} = require('../../services/jwt');
 
 
 // GET
 
-// Gets the user id based on the received token
+// Gets the user id and info based on the received token
+const showMe = async (req, res, next) => {
+    let {user} = req;
 
+    User.findOne({ user_id: user.user_id }).then((usr) => {
+        if (usr === null) {
+            return res.status(410).json({message: 'User of this user_id is not currently registered'});
+        }
+        return res.status(200).json({user: usr.view()});
+    });
+};
 
 // Returns all users
 const getUsers = async ({ query }, res, next) => {
@@ -62,7 +71,6 @@ const getUserComments = async ({ query }, res, next) => {
 
 // POST
 
-//TODO 400 missing or invalid data, 409 username with same email exists
 // Creates new user
 const createUser = async ({ body }, res, next) => {
     try {
@@ -147,5 +155,6 @@ module.exports = {
     updateUser,
     destroyUser,
     destroyUserComments,
-    loginUser
+    loginUser,
+    showMe
 };
