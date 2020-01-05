@@ -24,10 +24,10 @@ router.get('/:id/comments', getUserComments);
 router.post('/', createUser);
 router.post('/login', password, loginUser);
 
-router.put('/:id', updateUser);
+router.put('/:id', token, updateUser);
 
-router.delete('/:id', destroyUser);
-router.delete('/:id/comments', destroyUserComments);
+router.delete('/:id', token, destroyUser);
+router.delete('/:id/comments', token, destroyUserComments);
 
 
 module.exports = router;

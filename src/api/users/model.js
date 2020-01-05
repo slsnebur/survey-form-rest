@@ -32,6 +32,14 @@ const UserSchema = new Schema({
         minlength: 3,
         maxlength: 256
     },
+    // User comments ids
+    comments_id: {
+        type: Array
+    },
+    // User forms ids
+    forms_id: {
+      type: Array
+    },
     //User group
     group: {
         type: String,
@@ -49,7 +57,7 @@ UserSchema.methods = {
     },
     // Returning user data
     view() {
-        let fields = ['user_id', 'username', 'email', 'group'];
+        let fields = ['user_id', 'username', 'email', 'comments_id', 'forms_id', 'group'];
         let view = {};
 
         fields.forEach((field) => {

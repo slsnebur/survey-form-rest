@@ -150,6 +150,10 @@ const addComment = async (req, res, next) => {
                     frm.comments_id.push(comment.comment_id);
                     frm.save();
 
+                    // Updating comments_id array in User to track user comments
+                    usr.comments_id.push(comment.comment_id);
+                    usr.save();
+
                     return res.status(201).json({comment: comment.view()});
                 } catch (e) {
                     console.error(e);

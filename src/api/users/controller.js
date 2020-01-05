@@ -1,4 +1,6 @@
 const {User} = require('./model');
+const {Comment} = require('../comments/model');
+const {Form} = require('../forms/model');
 const bcrypt = require('bcryptjs');
 const {sign} = require('../../services/jwt');
 
@@ -33,6 +35,8 @@ const getUsers = async ({ query }, res, next) => {
                     user_id: user.user_id,
                     username: user.username,
                     email: user.email,
+                    comments_id: user.comments_id,
+                    forms_id: user.forms_id,
                     group: user.group
                 };
             });
@@ -49,13 +53,11 @@ const getUser = async ({ params }, res, next) => {
     try {
         const user = await User.findOne(id);
         if(user) {
-            userLocal = {
-                user_id: user.user_id,
-                username: user.username,
-                email: user.email,
-                group: user.group
-            };
-            return res.status(200).json(userLocal);
+
+            return res.status(200).json({
+                user: user.view()
+            });
+
         }
         return res.status(404).json({error: 'User not found'});
     } catch (e) {
@@ -63,10 +65,41 @@ const getUser = async ({ params }, res, next) => {
     }
 };
 
-//TODO
 // Returns user's comments
-const getUserComments = async ({ query }, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const getUserComments = async (req, res, next) => {
+    // Pagination options
+    let pageOptions = {
+        page: req.query.page || 0,
+        limit: 5
+    };
+    const id = {user_id: req.params.id};
+    try {
+        const user = await User.findOne(id);
+        if(user) {
+            await Comment.find({comment_id: {$in : user.comments_id}}, function(err, comments) {
+                let commentMap = {};
+
+                comments.forEach(function(comment) {
+                    commentMap[comment.comment_id] = {
+                        comment_id: comment.comment_id,
+                        user_id: comment.user_id,
+                        form_id: comment.form_id,
+                        username: comment.username,
+                        text: comment.text,
+                        timestamp: comment.timestamp
+                    };
+                });
+                res.status(200).json(commentMap);
+                console.log(pageOptions);
+            }).limit(pageOptions.limit).skip(pageOptions.page * pageOptions.limit);
+
+        }
+        else {
+            return res.status(404).json({error: 'User not found'});
+        }
+    } catch (e) {
+        return next(e);
+    }
 };
 
 // POST
@@ -75,7 +108,14 @@ const getUserComments = async ({ query }, res, next) => {
 const createUser = async ({ body }, res, next) => {
     try {
         body.password = await bcrypt.hash(body.password, 12);
-        const user = await User.create(body);
+        const user = await User.create({
+            username: body.username,
+            email: body.email,
+            password: body.password,
+            comments_id: [],
+            forms_id: [],
+            group: 'standard'
+        });
         return res.status(201).json({
                 user: user.view(),
                 token: sign(user)
@@ -132,7 +172,7 @@ const destroyUser = async ({params}, res, next) => {
         const user = await User.findOne(id);
         if(user){
             await user.remove();
-            return res.status(204).end;
+            return res.status(202).end;
         }
         return res.status(404).json({error: "User not found"});
 
@@ -141,10 +181,68 @@ const destroyUser = async ({params}, res, next) => {
     }
 };
 
-//TODO
+//FIXME
+// Promise rejection probably due to async functions
 // Drops all user's comments
-const destroyUserComments = async ({params}, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const destroyUserComments = (req, res, next) => {
+    const id = req.params.id;
+    let tokenid = req.user.user_id;
+
+    try {
+        // Checking token id
+        User.findOne({ user_id: tokenid }).then((usr) => {
+            if (usr === null) {
+                return res.status(410).json({message: 'Bearer of this token is not registered'});
+            }
+
+            // Checking user status (permission ring)
+            User.findOne({user_id: id}).then((ussr) => {
+                if(ussr === null) {
+                    return res.status(410).json({message: 'User of this user_id does not exists'});
+                }
+               else if(usr.group === 'admin' || usr.user_id === ussr.user_id) {
+                    let comments = ussr.comments_id;
+
+                    // Before deletion of a comment its id must also be deleted from comments_id array in both Form and User
+                    comments.forEach(id => {
+                        // TODO
+                    // Form cleanup
+                        Comment.findOne({comment_id: id}).then((comm) => {
+                            if(comm === null) {
+                                console.warn('Comment of id: ' + id + ' is not physically present in database. Try manually cleaning up contents array.');
+                            }
+                            else {
+                                // Cleaning up User comments_id
+                                ussr.comments_id = ussr.comments_id.filter(function (value, index, arr) {
+                                    return value !== id;
+                                });
+                                ussr.save();
+
+                                // Cleaning up Form comments_id
+                                Form.findOne({form_id: comm.form_id}).then((frm) => {
+                                    frm.comments_id = frm.comments_id.filter(function (value, index, arr) {
+                                        return value !== id;
+                                    });
+                                    frm.save();
+                                });
+
+                                // Deleting comment
+                                comm.remove();
+                            }
+                        });
+                    });
+                    return res.status(202).json({message: 'Deleted'});
+                }
+               else {
+                    return res.status(401).json({message: 'Unauthorized'});
+                }
+
+            });
+        });
+
+    } catch (e) {
+        return next(e);
+    }
 };
 
 module.exports = {
