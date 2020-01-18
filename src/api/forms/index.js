@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const token = require('../../middlewares/token');
+const groupAuthorizeForm = require('../../middlewares/groupAuthorizeForm');
 const {
     getForms,
     getForm,
@@ -32,14 +33,14 @@ router.get('/:id/pages/:pid', getPageFromForm);
 
 router.post('/', token, addForm);
 router.post('/:id/comments', token, addComment);
-router.post('/:id/pages', token, addPages);
+router.post('/:id/pages', token, groupAuthorizeForm, addPages);
 
-router.put('/:id', token, updateForm);
-router.put('/:id/pages/:pid', token, updatePage);
+router.put('/:id', token, groupAuthorizeForm, updateForm);
+router.put('/:id/pages/:pid', token, groupAuthorizeForm, updatePage);
 
-router.delete('/:id', token, deleteForm);
-router.delete('/:id/comments', token, deleteAllCommentsFromForm);
-router.delete('/:id/pages', token, deletePagesFromForm);
-router.delete('/:id/pages/:pid', token, deletePageFromForm);
+router.delete('/:id', token, groupAuthorizeForm, deleteForm);
+router.delete('/:id/comments', token, groupAuthorizeForm, deleteAllCommentsFromForm);
+router.delete('/:id/pages', token, groupAuthorizeForm, deletePagesFromForm);
+router.delete('/:id/pages/:pid', token, groupAuthorizeForm, deletePageFromForm);
 
 module.exports = router;

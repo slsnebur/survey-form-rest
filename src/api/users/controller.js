@@ -185,64 +185,7 @@ const destroyUser = async ({params}, res, next) => {
 // Promise rejection probably due to async functions
 // Drops all user's comments
 const destroyUserComments = (req, res, next) => {
-    const id = req.params.id;
-    let tokenid = req.user.user_id;
-
-    try {
-        // Checking token id
-        User.findOne({ user_id: tokenid }).then((usr) => {
-            if (usr === null) {
-                return res.status(410).json({message: 'Bearer of this token is not registered'});
-            }
-
-            // Checking user status (permission ring)
-            User.findOne({user_id: id}).then((ussr) => {
-                if(ussr === null) {
-                    return res.status(410).json({message: 'User of this user_id does not exists'});
-                }
-               else if(usr.group === 'admin' || usr.user_id === ussr.user_id) {
-                    let comments = ussr.comments_id;
-
-                    // Before deletion of a comment its id must also be deleted from comments_id array in both Form and User
-                    comments.forEach(id => {
-                        // TODO
-                    // Form cleanup
-                        Comment.findOne({comment_id: id}).then((comm) => {
-                            if(comm === null) {
-                                console.warn('Comment of id: ' + id + ' is not physically present in database. Try manually cleaning up contents array.');
-                            }
-                            else {
-                                // Cleaning up User comments_id
-                                ussr.comments_id = ussr.comments_id.filter(function (value, index, arr) {
-                                    return value !== id;
-                                });
-                                ussr.save();
-
-                                // Cleaning up Form comments_id
-                                Form.findOne({form_id: comm.form_id}).then((frm) => {
-                                    frm.comments_id = frm.comments_id.filter(function (value, index, arr) {
-                                        return value !== id;
-                                    });
-                                    frm.save();
-                                });
-
-                                // Deleting comment
-                                comm.remove();
-                            }
-                        });
-                    });
-                    return res.status(202).json({message: 'Deleted'});
-                }
-               else {
-                    return res.status(401).json({message: 'Unauthorized'});
-                }
-
-            });
-        });
-
-    } catch (e) {
-        return next(e);
-    }
+    return res.status(200).json({error: "OK"});
 };
 
 module.exports = {

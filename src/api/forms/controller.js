@@ -124,7 +124,7 @@ const addForm = async (req, res, next) => {
 // Adds comment to specified form
 const addComment = async (req, res, next) => {
     let {user} = req;
-    let id = req.params.id
+    let id = req.params.id;
 
     try {
         User.findOne({ user_id: user.user_id }).then((usr) => {

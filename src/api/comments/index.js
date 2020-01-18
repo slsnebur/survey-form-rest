@@ -1,4 +1,6 @@
 const { Router } = require('express');
+const token = require('../../middlewares/token');
+const groupAuthorizeComment = require('../../middlewares/groupAuthorizeComment');
 const {
     getComment,
     updateComment,
@@ -8,8 +10,8 @@ const router = Router();
 
 router.get('/:id', getComment);
 
-router.put('/:id', updateComment);
+router.put('/:id', token, groupAuthorizeComment, updateComment);
 
-router.delete('/:id', deleteComment);
+router.delete('/:id', token, groupAuthorizeComment, deleteComment);
 
 module.exports = router;
