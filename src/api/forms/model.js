@@ -29,7 +29,7 @@ const FormSchema = new Schema({
             //Answer
             answer: {type: String},
             //Answer count FOR THIS SPECIFIC ANSWER (to actually make this app somewhat useful)
-            answer_count: {type: Number}
+            count: {type: Number}
         }]
     }]
 
@@ -48,6 +48,28 @@ FormSchema.methods = {
         });
 
         return view;
+    },
+
+    viewPage(pid) {
+        // Single page params
+        viewPage = {
+            question_id: this.pages[pid].question_id,
+            question: this.pages[pid].question,
+            answers: this.pages[pid].answers
+        };
+
+        return viewPage;
+    },
+
+    viewPages() {
+        let pageMap = [{}];
+
+        this.pages.forEach(function(page)
+        {
+            pageMap.push(page);
+        });
+
+        return pageMap;
     }
 };
 

@@ -18,6 +18,8 @@ const expressConfig = (apiRoot, api) => {
         return res.status(500).end();
     });
 
+    app.use(express.static('../public'));
+
     return app;
 };
 

@@ -2,7 +2,9 @@ const {Form} = require('./model');
 const {User} = require('../users/model');
 const {Comment} = require('../comments/model');
 
-//TODO Joi validation
+const path = require('path');
+const fs = require('fs');
+const QRCode = require('qrcode')
 
 // GET
 // Returns all forms currently present in DB
@@ -13,7 +15,7 @@ const getForms = async ({ query }, res, next) => {
             page: query.page || 0,
             limit: 5
         };
-        await Form.find({}, function(err, forms) {
+        await Form.find({'_id': false}, function(err, forms) {
             let formMap = {};
 
             forms.forEach(function(form) {
@@ -47,11 +49,42 @@ const getForm = async ({ params }, res, next) => {
     }
 };
 
-//TODO
-// Returns all comments of form specified by id
-const getCommentsFromForm = async ({ params }, res, next) => {
-    const id = parseInt(params.id);
-    res.json({message: 'This method has not been implemented'});
+const getCommentsFromForm = async (req, res, next) => {
+    // Pagination options
+    let pageOptions = {
+        page: req.query.page || 0,
+        limit: 5
+    };
+    const id = parseInt(req.params.id);
+
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form) {
+            await Comment.find({comment_id: {$in : form.comments_id}}, function(err, comments) {
+                let commentMap = {};
+
+                comments.forEach(function(comment) {
+                    commentMap[comment.comment_id] = {
+                        comment_id: comment.comment_id,
+                        user_id: comment.user_id,
+                        form_id: comment.form_id,
+                        username: comment.username,
+                        text: comment.text,
+                        timestamp: comment.timestamp
+                    };
+                });
+                res.status(200).json(commentMap);
+                console.log(pageOptions);
+            }).limit(pageOptions.limit).skip(pageOptions.page * pageOptions.limit);
+
+        }
+        else {
+            return res.status(404).json({error: 'Form not found'});
+        }
+    } catch(e) {
+        next(e);
+    }
+
 };
 
 // Returns owner of the form specified by id
@@ -82,25 +115,73 @@ const getSummaryFromForm = async ({ params }, res, next) => {
     res.json({message: 'This method has not been implemented'});
 };
 
-
+// TODO
 // Returns QR code which contains link to this form
-const getQRForm = async ({ params }, res, next) => {
-    const id = parseInt(params.id);
-    res.json({message: 'This method has not been implemented'});
+const getQRForm = async (req, res, next) => {
+    const id = parseInt(req.params.id);
+    const imgPath = id + '.png';
+    dirPath = path.join(__dirname, '../../../public/qr');
+    filePath = path.join(dirPath, imgPath);
+
+    try {
+        // Check if form exists
+         Form.findOne({ form_id: id }).then(async (frm) => {
+            if (frm === null) {
+                return res.status(410).json({message: 'Form of such form_id does not exist'});
+            }
+            // Check if file exists
+            else if(fs.existsSync(filePath)) {
+                res.sendFile(imgPath, {'root': dirPath});
+            }
+            // If QR code does not exists it needs to be generated and saved
+            else {
+                 await QRCode.toFile(filePath, process.env.DOMAIN_NAME + 'api/forms/' + id, function (err, url) {
+                    console.log('QR code saved to ' + filePath);
+                });
+                res.sendFile(imgPath, {'root': dirPath});
+            }
+        });
+
+    } catch (e) {
+        next(e);
+    }
+    //res.json({message: 'This method has not been implemented'});
 };
 
-//TODO
-// Returns array of pages (sets with questions and answers) associated with this form
-const getPagesFromForm = async ({ params }, res, next) => {
-    const id = parseInt(params.id);
-    res.json({message: 'This method has not been implemented'});
+const getPagesFromForm = async (req, res, next) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form){
+            return res.status(200).json({
+                pages: form.viewPages()
+            });
+        }
+        return res.status(404).json({error: "Form not found"});
+
+    } catch(e) {
+        next(e);
+    }
 };
 
-//TODO
-// Returns page with specified page id
-const getPageFromForm = async ({ params }, res, next) => {
-    const id = parseInt(params.id);
-    res.json({message: 'This method has not been implemented'});
+const getPageFromForm = async (req, res, next) => {
+    const id = parseInt(req.params.id);
+    const pid = parseInt(req.params.pid) || 0;
+
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form){
+            return res.status(200).json({
+                message: "OK",
+                pages: form.viewPage(pid)
+            });
+        }
+        return res.status(404).json({error: "Form not found"});
+
+    } catch(e) {
+        next(e);
+    }
 };
 
 //POST
@@ -157,7 +238,7 @@ const addComment = async (req, res, next) => {
                     return res.status(201).json({comment: comment.view()});
                 } catch (e) {
                     console.error(e);
-                    return res.status(503).json({message: 'SERVICE UNAVAILABLE'});
+                    return res.status(503).json({message: 'Comment length should be between 4 and 512 characters'});
                 }
             });
         });
@@ -169,9 +250,9 @@ const addComment = async (req, res, next) => {
 
 //TODO
 // Appends to Pages array
-const addPages = async ({ body, params }, res, next) => {
-    const id = {form_id: params.id};
-    const { pages } = body;
+const addPages = async (req, res, next) => {
+    const id = {form_id: req.params.id};
+    const { pages } = req.body;
     try {
         const form = await Form.findOne(id);
         if(form) {
@@ -208,8 +289,26 @@ const addPages = async ({ body, params }, res, next) => {
 // PUT
 
 // Updates form specified by id
-const updateForm = async ({ body , params }, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const updateForm = async (req, res, next) => {
+    const id = req.params.id;
+    const {name, pages} = req.body;
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form){
+            form.name = name;
+            form.pages = pages;
+            form.timestamp = new Date();
+            await form.save();
+            return res.status(200).json({
+                message: "Form data successfully updated",
+                form: form.view()
+            });
+        }
+        return res.status(404).json({error: "Form not found"});
+
+    } catch (e) {
+        next(e)
+    }
 };
 
 //TODO
@@ -221,8 +320,20 @@ const updatePage = async ({ body , params }, res, next) => {
 // DELETE
 
 // Deletes form specified by id
-const deleteForm = async ({ params }, res, next) => {
-    res.json({message: 'This method has not been implemented'});
+const deleteForm = async (req, res, next) => {
+    const id = req.params.id;
+
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form){
+            await form.remove();
+            return res.status(202).json({message: "Deleted"});
+        }
+        return res.status(404).json({error: "Form not found"});
+
+    } catch (e) {
+        next(e)
+    }
 };
 
 //TODO
