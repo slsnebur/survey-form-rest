@@ -4,7 +4,7 @@ const {Comment} = require('../comments/model');
 
 const path = require('path');
 const fs = require('fs');
-const QRCode = require('qrcode')
+const QRCode = require('qrcode');
 
 // GET
 // Returns all forms currently present in DB
@@ -17,16 +17,22 @@ const getForms = async ({ query }, res, next) => {
         };
         await Form.find({'_id': false}, function(err, forms) {
             let formMap = {};
+            console.log(forms);
 
-            forms.forEach(function(form) {
-                formMap[form.form_id] = {
-                    form_id: form.form_id,
-                    name: form.name,
-                    user_id: form.user_id,
-                    comments_id: form.comments_id,
-                    pages: form.pages
-                };
-            });
+            if(forms === undefined) {
+
+            }
+            else {
+                forms.forEach(function(form) {
+                    formMap[form.form_id] = {
+                        form_id: form.form_id,
+                        name: form.name,
+                        user_id: form.user_id,
+                        comments_id: form.comments_id,
+                        pages: form.pages
+                    };
+                });
+            }
             res.status(200).json(formMap);
         }).limit(pageOptions.limit).skip(pageOptions.page * pageOptions.limit);
     } catch (e) {

@@ -11,8 +11,6 @@ const sign = (user) => {
     }, process.env.JWT_SECRET, options)
 };
 
-console.log(process.env.JWT_SECRET);
-
 module.exports = {
     sign
 };

@@ -172,7 +172,7 @@ const destroyUser = async ({params}, res, next) => {
         const user = await User.findOne(id);
         if(user){
             await user.remove();
-            return res.status(202).end;
+            return res.status(202).json({message: "Deleted"});
         }
         return res.status(404).json({error: "User not found"});
 
