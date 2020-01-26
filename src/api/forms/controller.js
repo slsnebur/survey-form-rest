@@ -194,11 +194,15 @@ const getPageFromForm = async (req, res, next) => {
 // Creates empty form
 const addForm = async (req, res, next) => {
     try {
+        // Adding indexes and 0 count to pages
+
+
+
         const form = await Form.create({
             name: req.body.name,
             user_id: req.user.user_id,
             comments_id: [],
-            pages: []
+            pages: req.body.pages
         });
         return res.status(201).json({
             form: form.view()

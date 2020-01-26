@@ -10,7 +10,7 @@ const config = {
             useCreateIndex: true,
             useUnifiedTopology: true,
             useFindAndModify: false,
-            debug: true
+            debug: false
         }
     },
     jwtExpiration: "365d"

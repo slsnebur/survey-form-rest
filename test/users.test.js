@@ -23,7 +23,6 @@ before(function(done) {
         .set('Accept', 'application/json')
         .end(function(err, res) {
             authToken = res.body.token;
-            console.log(res.body);
             u_id = res.body.user.user_id;
             if (err) return done(err);
             done();

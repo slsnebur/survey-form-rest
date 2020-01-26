@@ -21,6 +21,7 @@ const {
     deletePageFromForm
 } = require('./controller');
 const router = Router();
+const validateCreateform = require('../../middlewares/validateCreateForm');
 
 router.get('/', getForms);
 router.get('/:id', getForm);
@@ -31,9 +32,9 @@ router.get('/:id/qr', getQRForm);
 router.get('/:id/pages', getPagesFromForm);
 router.get('/:id/pages/:pid', getPageFromForm);
 
-router.post('/', token, addForm);
+router.post('/', token, validateCreateform, addForm);
 router.post('/:id/comments', token, addComment);
-router.post('/:id/pages', token, groupAuthorizeForm, addPages);
+router.post('/:id/pages', groupAuthorizeForm, token, addPages);
 
 router.put('/:id', token, groupAuthorizeForm, updateForm);
 router.put('/:id/pages/:pid', token, groupAuthorizeForm, updatePage);
