@@ -193,11 +193,26 @@ const getPageFromForm = async (req, res, next) => {
 //POST
 // Creates empty form
 const addForm = async (req, res, next) => {
-    try {
+
         // Adding indexes and 0 count to pages
+        if(req.body.pages) {
+            let pages = req.body.pages;
 
+            iterator = 1;
+            pages.forEach(element => {
+                // Setting indexes for pages
+                element.question_id = iterator;
+                iterator++;
 
+                // Setting answer count to 0
+                element.answers.forEach(answer => {
+                    answer.count = 0;
+                });
+            });
 
+        }
+
+    try {
         const form = await Form.create({
             name: req.body.name,
             user_id: req.user.user_id,
@@ -211,6 +226,38 @@ const addForm = async (req, res, next) => {
         return next(e);
     }
 };
+
+// Answer specific question
+const answerQuestion = async (req, res, next) => {
+    const id = parseInt(req.params.id);
+    const pid = parseInt(req.params.pid) || 0;
+    const answer = parseInt(req.body.answer);
+
+    try {
+        const form = await Form.findOne({form_id: id});
+        if(form){
+            if(form.pages.length !== 0){
+                if((form.pages.length >= pid)) {
+                    if(answer <= form.pages[pid-1].answers.length) {
+                        console.log(form.pages[pid-1].answers);
+                        form.pages[pid-1].answers[answer-1].count+=1;
+                        form.save();
+
+                        return res.status(200).json({
+                            message: "Answer submitted",
+                            form: form
+                        });
+                    }
+                }
+            }
+        }
+        return res.status(422).json({error: "Cannot answer this question"});
+
+    } catch(e) {
+        next(e);
+    }
+};
+
 
 // Adds comment to specified form
 const addComment = async (req, res, next) => {
@@ -382,6 +429,7 @@ module.exports = {
     deleteForm,
     deleteAllCommentsFromForm,
     deletePagesFromForm,
-    deletePageFromForm
+    deletePageFromForm,
+    answerQuestion
 };
 

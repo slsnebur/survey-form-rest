@@ -86,11 +86,11 @@ describe('Forms API integrations tests', () => {
                 });
         });
 
-        it('should return 400 when form does not have a name', (done) => {
+        it('should return 422 when form does not have a name', (done) => {
             request(app).post('/api/forms')
                 .set('Authorization', 'bearer ' + authToken)
                 .end((err, res) => {
-                    expect(res.statusCode).to.equal(400);
+                    expect(res.statusCode).to.equal(422);
                     done();
                 });
         });

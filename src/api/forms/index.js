@@ -18,10 +18,12 @@ const {
     deleteForm,
     deleteAllCommentsFromForm,
     deletePagesFromForm,
-    deletePageFromForm
+    deletePageFromForm,
+    answerQuestion
 } = require('./controller');
 const router = Router();
 const validateCreateform = require('../../middlewares/validateCreateForm');
+const validateSubmitAnswer = require('../../middlewares/validateSubmitAnswer');
 
 router.get('/', getForms);
 router.get('/:id', getForm);
@@ -35,6 +37,7 @@ router.get('/:id/pages/:pid', getPageFromForm);
 router.post('/', token, validateCreateform, addForm);
 router.post('/:id/comments', token, addComment);
 router.post('/:id/pages', groupAuthorizeForm, token, addPages);
+router.post('/:id/pages/:pid',validateSubmitAnswer, token, answerQuestion);
 
 router.put('/:id', token, groupAuthorizeForm, updateForm);
 router.put('/:id/pages/:pid', token, groupAuthorizeForm, updatePage);
@@ -43,5 +46,7 @@ router.delete('/:id', token, groupAuthorizeForm, deleteForm);
 router.delete('/:id/comments', token, groupAuthorizeForm, deleteAllCommentsFromForm);
 router.delete('/:id/pages', token, groupAuthorizeForm, deletePagesFromForm);
 router.delete('/:id/pages/:pid', token, groupAuthorizeForm, deletePageFromForm);
+
+
 
 module.exports = router;
